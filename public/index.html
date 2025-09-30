@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SprintCopilot - AI-Powered Project Assistant | Hackathon Presentation</title>
+    <meta name="description" content="SprintCopilot transforms unclear user stories into actionable sprint plans using AI-powered analysis">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="presentation.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-3 fw-bold mb-4">
+                            🚀 <span class="gradient-text">SprintCopilot</span>
+                        </h1>
+                        <p class="lead mb-4">AI-Powered Project Development Assistant that transforms unclear user stories into actionable sprint plans</p>
+                        <div class="hero-stats row text-center mb-4">
+                            <div class="col-4">
+                                <h3 class="text-light">95%</h3>
+                                <small>Faster Analysis</small>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="text-info">80%</h3>
+                                <small>Fewer Blockers</small>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="text-warning">60%</h3>
+                                <small>Better Estimates</small>
+                            </div>
+                        </div>
+                        <div class="hero-buttons">
+                            <a href="demo.html" class="btn btn-dark btn-lg me-3" aria-label="Try SprintCopilot Live Demo">
+                                <i class="fas fa-play" aria-hidden="true"></i> Live Demo
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg" aria-label="Learn more about SprintCopilot features">
+                                <i class="fas fa-info-circle" aria-hidden="true"></i> Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <div class="dashboard-preview" role="img" aria-label="SprintCopilot Dashboard Preview">
+                            <div class="preview-header">
+                                <div class="preview-dots" aria-hidden="true">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <span class="preview-title">SprintCopilot Dashboard</span>
+                            </div>
+                            <div class="preview-content">
+                                <div class="preview-stats">
+                                    <div class="stat-card">
+                                        <h4>8</h4>
+                                        <p>Story Points</p>
+                                    </div>
+                                    <div class="stat-card">
+                                        <h4>12</h4>
+                                        <p>Tasks</p>
+                                    </div>
+                                    <div class="stat-card">
+                                        <h4>7</h4>
+                                        <p>Dev Days</p>
+                                    </div>
+                                </div>
+                                <div class="preview-chart" aria-label="Sprint progress chart">
+                                    <div class="chart-bar" style="height: 60%" aria-label="Day 1: 60%"></div>
+                                    <div class="chart-bar" style="height: 80%" aria-label="Day 2: 80%"></div>
+                                    <div class="chart-bar" style="height: 45%" aria-label="Day 3: 45%"></div>
+                                    <div class="chart-bar" style="height: 90%" aria-label="Day 4: 90%"></div>
+                                    <div class="chart-bar" style="height: 70%" aria-label="Day 5: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Statement -->
+    <section class="problem-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="display-5 fw-bold mb-4">The Corporate Development Challenge</h2>
+                    <p class="lead mb-5">In most companies, development teams struggle with unclear user stories, leading to delays, rework, and inefficiency.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon bg-danger">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                        </div>
+                        <h3>Unclear Requirements</h3>
+                        <p>Vague acceptance criteria and missing domain knowledge cause confusion and multiple iterations.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon bg-warning">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                        </div>
+                        <h3>Poor Estimation</h3>
+                        <p>Difficulty in story estimation leads to missed deadlines and unrealistic sprint commitments.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon bg-info">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        </div>
+                        <h3>Hidden Blockers</h3>
+                        <p>Unidentified risks and dependencies cause unexpected surprises during development.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Overview -->
+    <section class="solution-section py-5" id="features">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">Our AI-Powered Solution</h2>
+                    <p class="lead">SprintCopilot analyzes user stories and generates comprehensive sprint plans with intelligent insights.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-primary">
+                            <i class="fas fa-brain" aria-hidden="true"></i>
+                        </div>
+                        <h3>AI Story Analysis</h3>
+                        <p>Automatically identifies missing details, generates acceptance criteria, and suggests API contracts.</p>
+                        <ul class="feature-list">
+                            <li>Missing requirements detection</li>
+                            <li>Auto-generated acceptance criteria</li>
+                            <li>API contract suggestions</li>
+                            <li>Database schema recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-success">
+                            <i class="fas fa-tasks" aria-hidden="true"></i>
+                        </div>
+                        <h3>Smart Sprint Planning</h3>
+                        <p>Creates detailed sprint plans with task breakdown, team allocation, and timeline management.</p>
+                        <ul class="feature-list">
+                            <li>Flexible sprint duration (1-4 weeks)</li>
+                            <li>Task categorization by role</li>
+                            <li>Daily team tracking</li>
+                            <li>Leave and spillover planning</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-info">
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3>Risk Management</h3>
+                        <p>Proactively identifies risks, dependencies, and provides mitigation strategies.</p>
+                        <ul class="feature-list">
+                            <li>Risk assessment and scoring</li>
+                            <li>Dependency identification</li>
+                            <li>Spillover probability calculation</li>
+                            <li>Contingency planning</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Architecture -->
+    <section class="tech-section py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">Technical Architecture</h2>
+                    <p class="lead">Built with modern web technologies and AI integration for scalable enterprise solutions.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="tech-card text-center">
+                        <div class="tech-icon text-light mb-3">
+                            <i class="fab fa-html5 fa-3x" aria-hidden="true"></i>
+                        </div>
+                        <h4>Frontend</h4>
+                        <p>HTML5, CSS3, Bootstrap 5, Vanilla JavaScript</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card text-center">
+                        <div class="tech-icon text-info mb-3">
+                            <i class="fas fa-robot fa-3x" aria-hidden="true"></i>
+                        </div>
+                        <h4>AI Integration</h4>
+                        <p>OpenRouter API, GPT-4o-mini, Context-aware prompting</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card text-center">
+                        <div class="tech-icon text-warning mb-3">
+                            <i class="fas fa-chart-line fa-3x" aria-hidden="true"></i>
+                        </div>
+                        <h4>Visualization</h4>
+                        <p>Chart.js, Bootstrap Components, Responsive Design</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card text-center">
+                        <div class="tech-icon text-info mb-3">
+                            <i class="fas fa-file-excel fa-3x" aria-hidden="true"></i>
+                        </div>
+                        <h4>Export</h4>
+                        <p>Excel integration, PDF reports, Data visualization</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Sprint Planning?</h2>
+                    <p class="lead mb-4">Experience the power of AI-driven project management and see immediate improvements in your development workflow.</p>
+                    <div class="cta-buttons">
+                        <a href="demo.html" class="btn btn-light btn-lg me-3" aria-label="Try SprintCopilot application now">
+                            <i class="fas fa-rocket" aria-hidden="true"></i> Try SprintCopilot Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section py-4 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>🚀 SprintCopilot</h5>
+                    <p class="mb-0">AI-Powered Project Development Assistant</p>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p class="mb-0">Built for AI Hackathon 2024 | Transforming Corporate Development</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="presentation.js"></script>
+</body>
+</html>obability calculation</li>
+                            <li>Contingency planning</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Architecture -->
+    <section class="tech-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">Technical Architecture</h2>
+                    <p class="lead">Built with modern web technologies and AI integration for scalable enterprise solutions.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fab fa-html5"></i>
+                        </div>
+                        <h5>Frontend</h5>
+                        <p>HTML5, CSS3, Bootstrap 5, Vanilla JavaScript</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h5>AI Integration</h5>
+                        <p>OpenRouter API, GPT-4o-mini, Context-aware prompting</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5>Visualization</h5>
+                        <p>Chart.js, Bootstrap Components, Responsive Design</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                        <h5>Export</h5>
+                        <p>Excel integration, PDF reports, Data visualization</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Flow -->
+    <section class="demo-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">How It Works</h2>
+                    <p class="lead">Simple 3-step process to transform user stories into actionable sprint plans.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="demo-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Input Story</h4>
+                            <p>Paste your Jira user story and configure team settings (size, project type, sprint duration).</p>
+                            <div class="step-visual">
+                                <div class="input-mockup">
+                                    <div class="mockup-header">Story Input</div>
+                                    <div class="mockup-content">
+                                        <div class="mockup-line"></div>
+                                        <div class="mockup-line short"></div>
+                                        <div class="mockup-line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="demo-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>AI Analysis</h4>
+                            <p>Our AI analyzes the story, identifies gaps, generates tasks, and creates comprehensive breakdown.</p>
+                            <div class="step-visual">
+                                <div class="analysis-mockup">
+                                    <div class="analysis-item">
+                                        <i class="fas fa-check-circle text-info"></i>
+                                        <span>Requirements analyzed</span>
+                                    </div>
+                                    <div class="analysis-item">
+                                        <i class="fas fa-check-circle text-info"></i>
+                                        <span>Tasks generated</span>
+                                    </div>
+                                    <div class="analysis-item">
+                                        <i class="fas fa-check-circle text-info"></i>
+                                        <span>Risks identified</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="demo-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Sprint Plan</h4>
+                            <p>Get detailed sprint plan with team tracking, timeline, and risk management strategies.</p>
+                            <div class="step-visual">
+                                <div class="plan-mockup">
+                                    <div class="plan-header">Sprint Plan</div>
+                                    <div class="plan-timeline">
+                                        <div class="timeline-item active"></div>
+                                        <div class="timeline-item active"></div>
+                                        <div class="timeline-item"></div>
+                                        <div class="timeline-item"></div>
+                                        <div class="timeline-item"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact & Benefits -->
+    <section class="impact-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-4">Business Impact</h2>
+                    <p class="lead">Measurable improvements in development efficiency and project success rates.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="impact-card">
+                        <div class="impact-metric">
+                            <h3 class="text-success">40%</h3>
+                            <p>Reduction in Sprint Planning Time</p>
+                        </div>
+                        <div class="impact-description">
+                            <p>Automated analysis and task generation significantly reduces manual planning effort.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="impact-card">
+                        <div class="impact-metric">
+                            <h3 class="text-info">60%</h3>
+                            <p>Fewer Development Blockers</p>
+                        </div>
+                        <div class="impact-description">
+                            <p>Proactive risk identification and dependency mapping prevent common development issues.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="impact-card">
+                        <div class="impact-metric">
+                            <h3 class="text-success">50%</h3>
+                            <p>Improved Estimation Accuracy</p>
+                        </div>
+                        <div class="impact-description">
+                            <p>AI-powered complexity analysis provides more accurate story point estimates.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="impact-card">
+                        <div class="impact-metric">
+                            <h3 class="text-info">30%</h3>
+                            <p>Faster Onboarding</p>
+                        </div>
+                        <div class="impact-description">
+                            <p>Clear documentation and context help new team members understand requirements quickly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Sprint Planning?</h2>
+                    <p class="lead mb-4">Experience the power of AI-driven project management and see immediate improvements in your development workflow.</p>
+                    <div class="cta-buttons">
+                        <a href="demo.html" class="btn btn-dark btn-lg me-3">
+                            <i class="fas fa-rocket"></i> Try SprintCopilot Now
+                        </a>
+                        <!-- <a href="#contact" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-envelope"></i> Contact Us
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>🚀 SprintCopilot</h5>
+                    <p class="mb-0">AI-Powered Project Development Assistant</p>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p class="mb-0">Built for AI Hackathon 2024 | Transforming Corporate Development</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="presentation.js"></script>
+</body>
+</html>

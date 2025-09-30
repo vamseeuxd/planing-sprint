@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SprintCopilot - AI Project Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 SprintCopilot</h1>
+            <p>AI-Powered Project Development Assistant</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2>📝 Story Analysis</h2>
+                        <textarea id="storyInput" placeholder="Paste your Jira story or user story here..."></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>⚙️ Configuration</h2>
+                        <div class="mb-3">
+                            <label for="sprintStartDate" class="form-label">Sprint Start Date:</label>
+                            <input type="date" class="form-control" id="sprintStartDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="teamSize" class="form-label">Team Size:</label>
+                            <select class="form-select" id="teamSize">
+                                <option value="3">Small (3 members)</option>
+                                <option value="5" selected>Medium (5 members)</option>
+                                <option value="8">Large (8 members)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectType" class="form-label">Project Type:</label>
+                            <select class="form-select" id="projectType">
+                                <option value="web">Web Application</option>
+                                <option value="mobile">Mobile App</option>
+                                <option value="api">API/Backend</option>
+                                <option value="fullstack" selected>Full Stack</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sprintWeeks" class="form-label">Sprint Duration:</label>
+                            <select class="form-select" id="sprintWeeks">
+                                <option value="1">1 Week (5 days)</option>
+                                <option value="2" selected>2 Weeks (10 days)</option>
+                                <option value="3">3 Weeks (15 days)</option>
+                                <option value="4">4 Weeks (20 days)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button id="analyzeBtn" class="btn btn-primary btn-lg">🚀 Analyze & Plan Sprint</button>
+                    <button id="exportBtn" class="btn btn-success ms-2" style="display: none;">📊 Export to Excel</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="results" style="display: none;">
+                <!-- Progress Bar -->
+                <div class="progress-section mb-4">
+                    <h3>📈 Analysis Progress</h3>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="stats-section mb-4">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h4 id="totalPoints">0</h4>
+                                <p>Story Points</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h4 id="totalTasks">0</h4>
+                                <p>Total Tasks</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h4 id="estimatedDays">0</h4>
+                                <p>Dev Days</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <h4 id="riskLevel">Low</h4>
+                                <p>Risk Level</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
