@@ -9,6 +9,7 @@ class SprintCopilot {
     document.getElementById("exportBtn").addEventListener("click", () => this.exportToExcel());
     // this.promptForApiKey();
     this.setDefaultDate();
+    this.loadHistoryList();
   }
 
   setDefaultDate() {
@@ -47,7 +48,9 @@ class SprintCopilot {
 
     try {
       const analysis = await this.callOpenRouter(storyText);
+      this.saveAnalysis(storyText, analysis);
       this.displayResults(analysis);
+      this.loadHistoryList();
       document.getElementById('exportBtn').style.display = 'inline-block';
     } catch (error) {
       console.error("Analysis failed:", error);
@@ -96,10 +99,10 @@ Provide comprehensive analysis in this JSON format:
         "e2e": ["E2E test 1"]
     },
     "techStack": {
-        "frontend": ["React", "CSS"],
-        "backend": ["Node.js", "Express"],
-        "database": ["PostgreSQL"],
-        "tools": ["Docker", "Jest"]
+        "frontend": ["Angular", "Bootstrap 5"],
+        "backend": ["Java", "Spring Boot"],
+        "database": ["Oracle"],
+        "tools": ["Jenkins", "Karma", "Swagger"]
     },
     "complexityEstimate": {
         "level": "Low|Medium|High",
@@ -169,6 +172,7 @@ Provide comprehensive analysis in this JSON format:
       return;
     }
     
+    this.currentAnalysis = analysis;
     resultsDiv.style.display = "block";
     this.updateStats(analysis);
     
@@ -242,33 +246,68 @@ Provide comprehensive analysis in this JSON format:
     `;
   }
 
-  createList(items) {
-    if (!items || items.length === 0) {
-      return "<p>No specific items identified.</p>";
-    }
-    return '<div class="list-group">' + items.map((item) => `<div class="list-group-item">${item}</div>`).join("") + '</div>';
+  createList(items, category = '', isEditable = true) {
+    const itemsArray = items || [];
+    return `
+      <div class="list-group" data-category="${category}">
+        ${itemsArray.map((item, index) => `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="editable-content" contenteditable="${isEditable}" data-category="${category}" data-index="${index}">${item}</span>
+            ${isEditable ? `
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-success" onclick="sprintCopilot.saveEdit('${category}', ${index})">💾</button>
+                <button class="btn btn-outline-danger" onclick="sprintCopilot.deleteItem('${category}', ${index})">🗑️</button>
+              </div>
+            ` : ''}
+          </div>
+        `).join("")}
+        ${isEditable ? `
+          <div class="list-group-item border-0 p-2">
+            <button class="btn btn-sm btn-outline-primary w-100" onclick="sprintCopilot.addItem('${category}')">
+              ➕ Add New Item
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `;
   }
 
-  createCategorizedList(categories) {
-    if (!categories || Object.keys(categories).length === 0) {
-      return "<p>No items identified.</p>";
-    }
+  createCategorizedList(categories, isEditable = true) {
+    const categoriesObj = categories || {};
     
     const categoryIcons = {
       frontend: '🎨',
       backend: '⚙️',
       database: '🗄️',
+      tools: '📝',
       testing: '🧪'
     };
     
-    return Object.entries(categories).map(([category, items]) => {
-      if (!items || items.length === 0) return '';
+    return Object.entries(categoriesObj).map(([category, items]) => {
+      const itemsArray = items || [];
       const icon = categoryIcons[category] || '📝';
       return `
         <div class="category-section">
           <h5>${icon} ${category.charAt(0).toUpperCase() + category.slice(1)}</h5>
-          <div class="list-group">
-            ${items.map(item => `<div class="list-group-item">${item}</div>`).join('')}
+          <div class="list-group" data-category="${category}">
+            ${itemsArray.map((item, index) => `
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="editable-content" contenteditable="${isEditable}" data-category="${category}" data-index="${index}">${item}</span>
+                ${isEditable ? `
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-success" onclick="sprintCopilot.saveEdit('${category}', ${index})">💾</button>
+                    <button class="btn btn-outline-danger" onclick="sprintCopilot.deleteItem('${category}', ${index})">🗑️</button>
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+            ${isEditable ? `
+              <div class="list-group-item border-0 p-2">
+                <button class="btn btn-sm btn-outline-primary w-100" onclick="sprintCopilot.addItem('${category}')">
+                  ➕ Add New Item
+                </button>
+              </div>
+            ` : ''}
           </div>
         </div>
       `;
@@ -415,13 +454,13 @@ Provide comprehensive analysis in this JSON format:
         <div class="col-md-6">
           <div class="card">
             <h3>📋 Missing Details</h3>
-            <div>${this.createList(analysis.missingDetails)}</div>
+            <div>${this.createList(analysis.missingDetails, 'missingDetails')}</div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
             <h3>🎯 Acceptance Criteria</h3>
-            <div>${this.createList(analysis.acceptanceCriteria)}</div>
+            <div>${this.createList(analysis.acceptanceCriteria, 'acceptanceCriteria')}</div>
           </div>
         </div>
       </div>
@@ -429,7 +468,7 @@ Provide comprehensive analysis in this JSON format:
         <div class="col-md-6">
           <div class="card">
             <h3>⚠️ Risks & Dependencies</h3>
-            <div>${this.createList(analysis.risksAndDependencies)}</div>
+            <div>${this.createList(analysis.risksAndDependencies, 'risksAndDependencies')}</div>
           </div>
         </div>
         <div class="col-md-6">
@@ -462,13 +501,13 @@ Provide comprehensive analysis in this JSON format:
         <div class="col-md-6">
           <div class="card">
             <h3>🔗 API Contracts</h3>
-            <div>${this.createList(analysis.apiContracts)}</div>
+            <div>${this.createList(analysis.apiContracts, 'apiContracts')}</div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
             <h3>🗄️ Database Schema</h3>
-            <div>${this.createList(analysis.databaseSchema)}</div>
+            <div>${this.createList(analysis.databaseSchema, 'databaseSchema')}</div>
           </div>
         </div>
       </div>
@@ -526,7 +565,7 @@ Provide comprehensive analysis in this JSON format:
   }
 
   createTeamTrackingTable(teamSize, totalDays) {
-    const roles = ['Frontend Dev', 'Backend Dev', 'Full Stack Dev', 'QA Tester', 'DevOps', 'UI/UX', 'Tech Lead', 'Scrum Master'];
+    const roles = ['Angular Dev', 'Java Dev', 'Full Stack Dev', 'QA Tester', 'DevOps', 'UI/UX', 'Tech Lead', 'Scrum Master'];
     const teamMembers = roles.slice(0, teamSize);
     
     return `
@@ -578,8 +617,8 @@ Provide comprehensive analysis in this JSON format:
         <label class="form-label">Team Member on Leave:</label>
         <select class="form-select form-select-sm">
           <option>Select member...</option>
-          <option>Frontend Dev</option>
-          <option>Backend Dev</option>
+          <option>Angular Dev</option>
+          <option>Java Dev</option>
           <option>QA Tester</option>
         </select>
       </div>
@@ -625,11 +664,173 @@ Provide comprehensive analysis in this JSON format:
   exportToExcel() {
     alert('Excel export feature - Implementation depends on your specific requirements!');
   }
+
+  saveAnalysis(storyText, analysis) {
+    const key = `sprint_${Date.now()}`;
+    const data = {
+      id: key,
+      timestamp: new Date().toISOString(),
+      story: storyText.substring(0, 100) + (storyText.length > 100 ? '...' : ''),
+      fullStory: storyText,
+      analysis: analysis,
+      teamSize: document.getElementById('teamSize').value,
+      projectType: document.getElementById('projectType').value,
+      sprintWeeks: document.getElementById('sprintWeeks').value,
+      sprintStartDate: document.getElementById('sprintStartDate').value
+    };
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  loadAnalysis(key) {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+
+  getAllAnalyses() {
+    const analyses = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('sprint_')) {
+        const data = this.loadAnalysis(key);
+        if (data) analyses.push(data);
+      }
+    }
+    return analyses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+
+  loadHistoryList() {
+    const analyses = this.getAllAnalyses();
+    const historyHtml = analyses.length > 0 ? `
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5>📚 Analysis History</h5>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            ${analyses.map(item => `
+              <a href="#" class="list-group-item list-group-item-action" onclick="sprintCopilot.selectAnalysis('${item.id}')">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">${item.story}</h6>
+                  <small>${new Date(item.timestamp).toLocaleDateString()}</small>
+                </div>
+                <p class="mb-1">Team: ${item.teamSize} | ${item.projectType} | ${item.sprintWeeks}w</p>
+                <small>Points: ${item.analysis.complexityEstimate.storyPoints} | Risk: ${item.analysis.complexityEstimate.level}</small>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    ` : '';
+    
+    const existingHistory = document.getElementById('historySection');
+    if (existingHistory) {
+      existingHistory.innerHTML = historyHtml;
+    } else {
+      const inputSection = document.querySelector('.input-section');
+      if (inputSection && historyHtml) {
+        inputSection.insertAdjacentHTML('afterend', `<div id="historySection">${historyHtml}</div>`);
+      }
+    }
+  }
+
+  selectAnalysis(key) {
+    const data = this.loadAnalysis(key);
+    if (data) {
+      this.currentAnalysisKey = key;
+      document.getElementById('storyInput').value = data.fullStory;
+      document.getElementById('teamSize').value = data.teamSize;
+      document.getElementById('projectType').value = data.projectType;
+      document.getElementById('sprintWeeks').value = data.sprintWeeks;
+      document.getElementById('sprintStartDate').value = data.sprintStartDate;
+      this.displayResults(data.analysis);
+      document.getElementById('exportBtn').style.display = 'inline-block';
+    }
+  }
+
+  saveEdit(category, index) {
+    const element = document.querySelector(`[data-category="${category}"][data-index="${index}"]`);
+    if (!element || !this.currentAnalysis) return;
+    
+    const newValue = element.textContent.trim();
+    if (this.currentAnalysis[category] && Array.isArray(this.currentAnalysis[category])) {
+      this.currentAnalysis[category][index] = newValue;
+    } else if (this.currentAnalysis.subStories && this.currentAnalysis.subStories[category]) {
+      this.currentAnalysis.subStories[category][index] = newValue;
+    } else if (this.currentAnalysis.subTasks && this.currentAnalysis.subTasks[category]) {
+      this.currentAnalysis.subTasks[category][index] = newValue;
+    } else if (this.currentAnalysis.testingStrategy && this.currentAnalysis.testingStrategy[category]) {
+      this.currentAnalysis.testingStrategy[category][index] = newValue;
+    }
+    
+    if (this.currentAnalysisKey) {
+      const data = this.loadAnalysis(this.currentAnalysisKey);
+      if (data) {
+        data.analysis = this.currentAnalysis;
+        localStorage.setItem(this.currentAnalysisKey, JSON.stringify(data));
+      }
+    }
+    
+    element.style.backgroundColor = '#d4edda';
+    setTimeout(() => element.style.backgroundColor = '', 1000);
+  }
+
+  addItem(category) {
+    if (!this.currentAnalysis) return;
+    
+    const newItem = 'New item - click to edit';
+    
+    if (this.currentAnalysis[category] && Array.isArray(this.currentAnalysis[category])) {
+      this.currentAnalysis[category].push(newItem);
+    } else if (this.currentAnalysis.subStories && this.currentAnalysis.subStories[category]) {
+      this.currentAnalysis.subStories[category].push(newItem);
+    } else if (this.currentAnalysis.subTasks && this.currentAnalysis.subTasks[category]) {
+      this.currentAnalysis.subTasks[category].push(newItem);
+    } else if (this.currentAnalysis.testingStrategy && this.currentAnalysis.testingStrategy[category]) {
+      this.currentAnalysis.testingStrategy[category].push(newItem);
+    } else {
+      // Create new category if it doesn't exist
+      if (!this.currentAnalysis[category]) {
+        this.currentAnalysis[category] = [];
+      }
+      this.currentAnalysis[category].push(newItem);
+    }
+    
+    this.displayResults(this.currentAnalysis);
+    this.saveCurrentAnalysis();
+  }
+
+  deleteItem(category, index) {
+    if (!this.currentAnalysis || !confirm('Delete this item?')) return;
+    
+    if (this.currentAnalysis[category] && Array.isArray(this.currentAnalysis[category])) {
+      this.currentAnalysis[category].splice(index, 1);
+    } else if (this.currentAnalysis.subStories && this.currentAnalysis.subStories[category]) {
+      this.currentAnalysis.subStories[category].splice(index, 1);
+    } else if (this.currentAnalysis.subTasks && this.currentAnalysis.subTasks[category]) {
+      this.currentAnalysis.subTasks[category].splice(index, 1);
+    } else if (this.currentAnalysis.testingStrategy && this.currentAnalysis.testingStrategy[category]) {
+      this.currentAnalysis.testingStrategy[category].splice(index, 1);
+    }
+    
+    this.displayResults(this.currentAnalysis);
+    this.saveCurrentAnalysis();
+  }
+
+  saveCurrentAnalysis() {
+    if (this.currentAnalysisKey) {
+      const data = this.loadAnalysis(this.currentAnalysisKey);
+      if (data) {
+        data.analysis = this.currentAnalysis;
+        localStorage.setItem(this.currentAnalysisKey, JSON.stringify(data));
+      }
+    }
+  }
 }
 
 // Initialize the application when DOM is loaded
+let sprintCopilot;
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new SprintCopilot());
+  document.addEventListener('DOMContentLoaded', () => sprintCopilot = new SprintCopilot());
 } else {
-  new SprintCopilot();
+  sprintCopilot = new SprintCopilot();
 }
