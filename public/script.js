@@ -1,6 +1,6 @@
 class SprintCopilot {
   constructor() {
-    this.apiKey = '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'; // Default API key
+    this.apiKey = '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'; // Default API key
     this.init();
   }
 
@@ -69,11 +69,12 @@ class SprintCopilot {
     const teamSize = document.getElementById('teamSize').value;
     const projectType = document.getElementById('projectType').value;
     
-    const prompt = `Analyze this user story for a ${projectType} project with ${teamSize} team members:
+    const prompt = `You must respond with ONLY valid JSON. No explanations, no markdown, no additional text.
 
+Analyze this user story for a ${projectType} project with ${teamSize} team members:
 "${storyText}"
 
-Provide comprehensive analysis in this JSON format:
+Return ONLY this JSON structure:
 {
     "missingDetails": ["detail1", "detail2"],
     "acceptanceCriteria": ["criteria1", "criteria2"],
@@ -105,10 +106,10 @@ Provide comprehensive analysis in this JSON format:
         "tools": ["Jenkins", "Karma", "Swagger"]
     },
     "complexityEstimate": {
-        "level": "Low|Medium|High",
-        "storyPoints": "1-13",
+        "level": "Medium",
+        "storyPoints": "5",
         "reasoning": "explanation",
-        "confidence": "High|Medium|Low"
+        "confidence": "Medium"
     }
 }`;
 
@@ -136,11 +137,18 @@ Provide comprehensive analysis in this JSON format:
     }
 
     const data = await response.json();
-    let text = data.choices[0].message.content;
+    let text = data.choices[0].message.content.trim();
     
-    // Extract JSON from markdown code blocks
-    if (text.includes('```json')) {
-      text = text.replace(/```json\n/, '').replace(/\n```$/, '');
+    // Clean up various markdown formats
+    text = text.replace(/```json\s*\n?/g, '').replace(/\n?```\s*$/g, '');
+    text = text.replace(/```\s*\n?/g, '').replace(/\n?```\s*$/g, '');
+    
+    // Remove any leading/trailing explanatory text
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      text = text.substring(jsonStart, jsonEnd + 1);
     }
     
     try {
@@ -148,7 +156,45 @@ Provide comprehensive analysis in this JSON format:
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError);
       console.error('Raw text:', text);
-      throw new Error(`Failed to parse AI response: ${parseError.message}`);
+      
+      // Fallback: return a default structure
+      return {
+        "missingDetails": ["Unable to parse AI response"],
+        "acceptanceCriteria": ["Please try again"],
+        "apiContracts": ["API analysis failed"],
+        "databaseSchema": ["Schema analysis failed"],
+        "risksAndDependencies": ["Risk analysis failed"],
+        "subStories": {
+          "frontend": ["Frontend analysis failed"],
+          "backend": ["Backend analysis failed"],
+          "database": ["Database analysis failed"],
+          "devops": ["DevOps analysis failed"]
+        },
+        "subTasks": {
+          "frontend": ["Frontend tasks unavailable"],
+          "backend": ["Backend tasks unavailable"],
+          "database": ["Database tasks unavailable"],
+          "testing": ["Testing tasks unavailable"],
+          "devops": ["DevOps tasks unavailable"]
+        },
+        "testingStrategy": {
+          "unit": ["Unit testing strategy unavailable"],
+          "integration": ["Integration testing strategy unavailable"],
+          "e2e": ["E2E testing strategy unavailable"]
+        },
+        "techStack": {
+          "frontend": ["Angular", "Bootstrap 5"],
+          "backend": ["Java", "Spring Boot"],
+          "database": ["Oracle"],
+          "tools": ["Jenkins", "Karma", "Swagger"]
+        },
+        "complexityEstimate": {
+          "level": "Medium",
+          "storyPoints": "5",
+          "reasoning": "AI parsing failed, using default estimate",
+          "confidence": "Low"
+        }
+      };
     }
   }
 
@@ -789,38 +835,50 @@ Provide comprehensive analysis in this JSON format:
     const storyText = document.getElementById('storyInput').value;
     const projectType = document.getElementById('projectType').value;
     
-    const prompt = `Create a complete, professional web application based on this user story:
+    const prompt = `Create a FULLY FUNCTIONAL web application based on this user story:
 
 "${storyText}"
 
 Project Type: ${projectType}
 
-Requirements:
-1. Use Bootstrap 5.3 CDN for styling
-2. Create a modern dashboard-style application
-3. Include navigation bar with brand logo and menu items
-4. Add sidebar navigation for different sections
-5. Use professional color scheme (primary: #0d6efd, secondary: #6c757d)
-6. Include these sections based on story: Dashboard, Data Management, Reports, Settings
-7. Add realistic mock data in tables and cards
-8. Include interactive elements: buttons, forms, modals, charts placeholder
-9. Use Font Awesome icons (CDN)
-10. Add custom CSS for professional styling
-11. Make it fully responsive
-12. Include JavaScript for basic interactions
-13. Use proper spacing, shadows, and modern design patterns
-14. Add loading states and hover effects
+CRITICAL Requirements:
+1. Use Bootstrap 5.3 CDN and Font Awesome CDN
+2. Create working CRUD operations (Create, Read, Update, Delete)
+3. Store ALL data in localStorage with proper JSON structure
+4. Include functional forms that actually save data
+5. Add working search/filter functionality
+6. Include data validation and error handling
+7. Add confirmation dialogs for delete operations
+8. Create responsive dashboard with real data display
+9. Include working navigation between sections
+10. Add functional buttons with actual JavaScript actions
 
-Style Guidelines:
-- Clean, minimalist design
-- Consistent spacing (use Bootstrap spacing classes)
-- Professional typography
-- Subtle shadows and borders
-- Modern card-based layout
-- Proper color contrast
-- Smooth transitions
+Functionality Requirements:
+- Working forms that save to localStorage
+- Data tables that display real stored data
+- Add/Edit/Delete operations that persist
+- Search and filter capabilities
+- Form validation with error messages
+- Success/error notifications
+- Data export functionality
+- Responsive design for mobile/desktop
 
-Return ONLY the complete HTML code without markdown formatting.`;
+JavaScript Requirements:
+- localStorage data management functions
+- CRUD operation handlers
+- Form submission handlers
+- Data validation functions
+- Search/filter implementations
+- Modal management
+- Event listeners for all interactions
+
+Data Structure:
+- Use consistent JSON format in localStorage
+- Include unique IDs for all records
+- Add timestamps for created/updated dates
+- Implement proper data relationships
+
+Return ONLY complete HTML with embedded CSS and JavaScript that creates a WORKING application.`;
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -885,7 +943,6 @@ Return ONLY the complete HTML code without markdown formatting.`;
   }
 
   enhanceGeneratedApp(html) {
-    // Add additional styling and improvements to AI-generated HTML
     const enhancements = `
     <style>
       body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -896,10 +953,88 @@ Return ONLY the complete HTML code without markdown formatting.`;
       .sidebar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
       .main-content { background: #f8f9fa; min-height: 100vh; }
       .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+      .toast { z-index: 9999; }
     </style>
+    <script>
+      // Enhanced functionality for AI-generated apps
+      window.AppEnhancer = {
+        init() {
+          this.initializeStorage();
+          this.enhanceForms();
+          this.enhanceTables();
+          this.addNotifications();
+        },
+        
+        initializeStorage() {
+          if (!localStorage.getItem('appData')) {
+            localStorage.setItem('appData', JSON.stringify({
+              items: [],
+              users: [],
+              settings: {},
+              lastUpdated: new Date().toISOString()
+            }));
+          }
+        },
+        
+        enhanceForms() {
+          document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+              e.preventDefault();
+              this.handleFormSubmit(form);
+            });
+          });
+        },
+        
+        enhanceTables() {
+          document.querySelectorAll('table').forEach(table => {
+            this.makeTableInteractive(table);
+          });
+        },
+        
+        handleFormSubmit(form) {
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData);
+          data.id = Date.now();
+          data.created = new Date().toISOString();
+          
+          const appData = JSON.parse(localStorage.getItem('appData'));
+          if (!appData.items) appData.items = [];
+          appData.items.push(data);
+          localStorage.setItem('appData', JSON.stringify(appData));
+          
+          this.showNotification('Data saved successfully!', 'success');
+          form.reset();
+        },
+        
+        makeTableInteractive(table) {
+          const tbody = table.querySelector('tbody');
+          if (tbody) {
+            tbody.addEventListener('click', (e) => {
+              if (e.target.classList.contains('btn-danger')) {
+                if (confirm('Delete this item?')) {
+                  e.target.closest('tr').remove();
+                  this.showNotification('Item deleted!', 'warning');
+                }
+              }
+            });
+          }
+        },
+        
+        showNotification(message, type = 'info') {
+          const toast = document.createElement('div');
+          toast.className = \`alert alert-\${type} position-fixed top-0 end-0 m-3 toast\`;
+          toast.innerHTML = \`\${message} <button class="btn-close" onclick="this.parentElement.remove()"></button>\`;
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+        }
+      };
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.AppEnhancer) window.AppEnhancer.init();
+      });
+    </script>
     `;
     
-    // Insert enhancements before closing head tag
     if (html.includes('</head>')) {
       html = html.replace('</head>', enhancements + '</head>');
     } else {
@@ -1076,12 +1211,149 @@ Return ONLY the complete HTML code without markdown formatting.`;
         
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
+            // Data Management
+            const AppData = {
+                init() {
+                    if (!localStorage.getItem('appData')) {
+                        localStorage.setItem('appData', JSON.stringify({
+                            users: [{id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', created: new Date().toISOString()}],
+                            records: [{id: 1, name: 'Sample Record 1', status: 'Active', date: '2024-01-15', created: new Date().toISOString()}],
+                            settings: {appName: '${projectType} App', theme: 'Default', notifications: true}
+                        }));
+                    }
+                    this.loadDashboard();
+                },
+                
+                getData(type) {
+                    const data = JSON.parse(localStorage.getItem('appData'));
+                    return data[type] || [];
+                },
+                
+                saveData(type, items) {
+                    const data = JSON.parse(localStorage.getItem('appData'));
+                    data[type] = items;
+                    localStorage.setItem('appData', JSON.stringify(data));
+                },
+                
+                addItem(type, item) {
+                    const items = this.getData(type);
+                    item.id = Date.now();
+                    item.created = new Date().toISOString();
+                    items.push(item);
+                    this.saveData(type, items);
+                    this.showNotification('Item added successfully!', 'success');
+                },
+                
+                deleteItem(type, id) {
+                    if (confirm('Are you sure you want to delete this item?')) {
+                        const items = this.getData(type).filter(item => item.id != id);
+                        this.saveData(type, items);
+                        this.showNotification('Item deleted successfully!', 'success');
+                        this.refreshCurrentSection();
+                    }
+                },
+                
+                showNotification(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    toast.className = \`alert alert-\${type} position-fixed top-0 end-0 m-3\`;
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = \`\${message} <button class="btn-close" onclick="this.parentElement.remove()"></button>\`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                },
+                
+                loadDashboard() {
+                    const users = this.getData('users');
+                    const records = this.getData('records');
+                    document.querySelector('#dashboard .col-md-3:nth-child(1) h3').textContent = users.length;
+                    document.querySelector('#dashboard .col-md-3:nth-child(2) h3').textContent = records.length;
+                },
+                
+                refreshCurrentSection() {
+                    const activeSection = document.querySelector('.section:not([style*="display: none"])');
+                    if (activeSection.id === 'data') this.loadDataSection();
+                }
+            };
+            
             function showSection(sectionId) {
                 document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
                 document.getElementById(sectionId).style.display = 'block';
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 event.target.classList.add('active');
+                
+                if (sectionId === 'data') AppData.loadDataSection();
+                if (sectionId === 'settings') AppData.loadSettings();
             }
+            
+            AppData.loadDataSection = function() {
+                const records = this.getData('records');
+                const tbody = document.querySelector('#data tbody');
+                tbody.innerHTML = records.map(record => \`
+                    <tr>
+                        <td>\${record.id}</td>
+                        <td>\${record.name}</td>
+                        <td><span class="badge bg-\${record.status === 'Active' ? 'success' : 'warning'}">\${record.status}</span></td>
+                        <td>\${record.date}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editRecord(\${record.id})">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="AppData.deleteItem('records', \${record.id})">Delete</button>
+                        </td>
+                    </tr>
+                \`).join('');
+            };
+            
+            AppData.loadSettings = function() {
+                const data = JSON.parse(localStorage.getItem('appData'));
+                const settings = data.settings || {};
+                document.querySelector('#settings input[type="text"]').value = settings.appName || '${projectType} App';
+                document.querySelector('#settings select').value = settings.theme || 'Default';
+                document.querySelector('#settings input[type="checkbox"]').checked = settings.notifications || false;
+            };
+            
+            function addRecord() {
+                const name = prompt('Enter record name:');
+                if (name) {
+                    AppData.addItem('records', {
+                        name: name,
+                        status: 'Active',
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                    AppData.loadDataSection();
+                }
+            }
+            
+            function editRecord(id) {
+                const records = AppData.getData('records');
+                const record = records.find(r => r.id == id);
+                const newName = prompt('Edit record name:', record.name);
+                if (newName && newName !== record.name) {
+                    record.name = newName;
+                    record.updated = new Date().toISOString();
+                    AppData.saveData('records', records);
+                    AppData.showNotification('Record updated!', 'success');
+                    AppData.loadDataSection();
+                }
+            }
+            
+            function saveSettings() {
+                const data = JSON.parse(localStorage.getItem('appData'));
+                data.settings = {
+                    appName: document.querySelector('#settings input[type="text"]').value,
+                    theme: document.querySelector('#settings select').value,
+                    notifications: document.querySelector('#settings input[type="checkbox"]').checked
+                };
+                localStorage.setItem('appData', JSON.stringify(data));
+                AppData.showNotification('Settings saved!', 'success');
+            }
+            
+            // Initialize app
+            document.addEventListener('DOMContentLoaded', () => {
+                AppData.init();
+                
+                // Add event listeners
+                document.querySelector('#data .btn-primary').onclick = addRecord;
+                document.querySelector('#settings .btn-primary').onclick = saveSettings;
+            });
         </script>
     </body>
     </html>
