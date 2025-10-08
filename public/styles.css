@@ -282,3 +282,50 @@ header h1 {
     padding: 8px;
     margin: 8px 0;
 }
+
+/* APP Demo Styles */
+.app-preview-container {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.app-controls {
+    text-align: center;
+}
+
+.app-frame {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.desktop-frame {
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.mobile-frame {
+    width: 375px;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.mobile-frame iframe {
+    height: 667px !important;
+    border-radius: 18px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.editable-content:focus {
+    background-color: #fff3cd;
+    outline: 2px solid #ffc107;
+    border-radius: 4px;
+}

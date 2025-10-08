@@ -1,6 +1,6 @@
 class SprintCopilot {
   constructor() {
-    this.apiKey = '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'; // Default API key
+    this.apiKey = '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'; // Default API key
     this.init();
   }
 
@@ -224,6 +224,9 @@ Provide comprehensive analysis in this JSON format:
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="team-tab" data-bs-toggle="pill" data-bs-target="#team" type="button" role="tab">👥 Team Tracking</button>
         </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="demo-tab" data-bs-toggle="pill" data-bs-target="#demo" type="button" role="tab">📱 APP Demo</button>
+        </li>
       </ul>
       
       <div class="tab-content" id="analysisTabContent">
@@ -241,6 +244,9 @@ Provide comprehensive analysis in this JSON format:
         </div>
         <div class="tab-pane fade" id="team" role="tabpanel">
           ${this.createTeamTrackingTab(analysis)}
+        </div>
+        <div class="tab-pane fade" id="demo" role="tabpanel">
+          ${this.createAppDemoTab(analysis)}
         </div>
       </div>
     `;
@@ -659,6 +665,683 @@ Provide comprehensive analysis in this JSON format:
         </div>
       </div>
     `;
+  }
+
+  createAppDemoTab(analysis) {
+    return `
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5>📱 AI-Generated App Demo</h5>
+              <div class="btn-group">
+                <button class="btn btn-primary" onclick="sprintCopilot.generateAppDemo()" id="generateAppBtn">
+                  🤖 Generate App
+                </button>
+                <button class="btn btn-outline-secondary" onclick="sprintCopilot.openAppInNewTab()" id="openAppBtn" style="display:none">
+                  🔗 Open in New Tab
+                </button>
+                <div class="btn-group" id="exportAppBtns" style="display:none">
+                  <button class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                    📦 Export Code
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="sprintCopilot.exportAppCode('html')">📝 HTML File</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="sprintCopilot.exportAppCode('zip')">🗄️ Project ZIP</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="sprintCopilot.copyAppCode()">📋 Copy to Clipboard</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="appDemoContainer">
+                <div class="text-center p-5">
+                  <h4>Click "Generate App" to create a dynamic application based on your story analysis</h4>
+                  <p class="text-muted">AI will generate a complete responsive web application with multiple pages, navigation, and realistic functionality.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async generateAppDemo() {
+    if (!this.currentAnalysis) {
+      alert('Please analyze a story first');
+      return;
+    }
+
+    const generateBtn = document.getElementById('generateAppBtn');
+    const container = document.getElementById('appDemoContainer');
+    
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '🔄 Generating...';
+    
+    container.innerHTML = `
+      <div class="text-center p-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <h5 class="mt-3">🤖 AI is creating your application...</h5>
+        <p class="text-muted">This may take a few moments</p>
+      </div>
+    `;
+
+    try {
+      let appHtml = await this.callOpenRouterForApp();
+      
+      // Enhance the generated HTML with additional styling
+      appHtml = this.enhanceGeneratedApp(appHtml);
+      
+      this.generatedAppHtml = appHtml;
+      container.innerHTML = `
+        <div class="app-preview-container">
+          <div class="app-controls mb-3">
+            <div class="btn-group">
+              <button class="btn btn-sm btn-outline-secondary active" onclick="sprintCopilot.setViewMode('desktop')">🖥️ Desktop</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="sprintCopilot.setViewMode('mobile')">📱 Mobile</button>
+            </div>
+            <button class="btn btn-sm btn-success ms-2" onclick="sprintCopilot.regenerateApp()">🔄 Regenerate</button>
+          </div>
+          <div class="app-frame desktop-frame" id="appFrame">
+            <iframe srcdoc="${this.escapeHtml(appHtml)}" style="width:100%;height:600px;border:none;border-radius:8px;"></iframe>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('openAppBtn').style.display = 'inline-block';
+      document.getElementById('exportAppBtns').style.display = 'inline-block';
+      generateBtn.innerHTML = '✅ Generated';
+      
+    } catch (error) {
+      console.error('App generation failed:', error);
+      // Use fallback template
+      const fallbackApp = this.createFallbackApp();
+      this.generatedAppHtml = fallbackApp;
+      
+      container.innerHTML = `
+        <div class="app-preview-container">
+          <div class="alert alert-warning mb-3">
+            <small>⚠️ AI generation had issues. Using enhanced template instead.</small>
+          </div>
+          <div class="app-controls mb-3">
+            <div class="btn-group">
+              <button class="btn btn-sm btn-outline-secondary active" onclick="sprintCopilot.setViewMode('desktop')">🖥️ Desktop</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="sprintCopilot.setViewMode('mobile')">📱 Mobile</button>
+            </div>
+            <button class="btn btn-sm btn-primary ms-2" onclick="sprintCopilot.generateAppDemo()">🔄 Retry AI</button>
+          </div>
+          <div class="app-frame desktop-frame" id="appFrame">
+            <iframe srcdoc="${this.escapeHtml(fallbackApp)}" style="width:100%;height:600px;border:none;border-radius:8px;"></iframe>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('openAppBtn').style.display = 'inline-block';
+      document.getElementById('exportAppBtns').style.display = 'inline-block';
+      generateBtn.innerHTML = '✅ Template Used';
+    }
+    
+    generateBtn.disabled = false;
+  }
+
+  async callOpenRouterForApp() {
+    const storyText = document.getElementById('storyInput').value;
+    const projectType = document.getElementById('projectType').value;
+    
+    const prompt = `Create a complete, professional web application based on this user story:
+
+"${storyText}"
+
+Project Type: ${projectType}
+
+Requirements:
+1. Use Bootstrap 5.3 CDN for styling
+2. Create a modern dashboard-style application
+3. Include navigation bar with brand logo and menu items
+4. Add sidebar navigation for different sections
+5. Use professional color scheme (primary: #0d6efd, secondary: #6c757d)
+6. Include these sections based on story: Dashboard, Data Management, Reports, Settings
+7. Add realistic mock data in tables and cards
+8. Include interactive elements: buttons, forms, modals, charts placeholder
+9. Use Font Awesome icons (CDN)
+10. Add custom CSS for professional styling
+11. Make it fully responsive
+12. Include JavaScript for basic interactions
+13. Use proper spacing, shadows, and modern design patterns
+14. Add loading states and hover effects
+
+Style Guidelines:
+- Clean, minimalist design
+- Consistent spacing (use Bootstrap spacing classes)
+- Professional typography
+- Subtle shadows and borders
+- Modern card-based layout
+- Proper color contrast
+- Smooth transitions
+
+Return ONLY the complete HTML code without markdown formatting.`;
+
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${this.apiKey}`,
+        "HTTP-Referer": "https://sprintcopilot.local",
+        "X-Title": "SprintCopilot",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "model": "openai/gpt-4o-mini",
+        "messages": [
+          {
+            "role": "user",
+            "content": prompt
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let html = data.choices[0].message.content;
+    
+    // Clean up any markdown formatting
+    if (html.includes('```html')) {
+      html = html.replace(/```html\n/, '').replace(/\n```$/, '');
+    }
+    if (html.includes('```')) {
+      html = html.replace(/```\n/, '').replace(/\n```$/, '');
+    }
+    
+    return html;
+  }
+
+  setViewMode(mode) {
+    const frame = document.getElementById('appFrame');
+    const buttons = document.querySelectorAll('.app-controls .btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (mode === 'mobile') {
+      frame.className = 'app-frame mobile-frame';
+    } else {
+      frame.className = 'app-frame desktop-frame';
+    }
+  }
+
+  openAppInNewTab() {
+    if (!this.generatedAppHtml) {
+      alert('Please generate the app first');
+      return;
+    }
+    
+    const newWindow = window.open('', '_blank');
+    newWindow.document.write(this.generatedAppHtml);
+    newWindow.document.close();
+  }
+
+  enhanceGeneratedApp(html) {
+    // Add additional styling and improvements to AI-generated HTML
+    const enhancements = `
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      .navbar-brand { font-weight: bold; }
+      .card { box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: none; }
+      .btn { border-radius: 6px; }
+      .table { border-radius: 8px; overflow: hidden; }
+      .sidebar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .main-content { background: #f8f9fa; min-height: 100vh; }
+      .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    </style>
+    `;
+    
+    // Insert enhancements before closing head tag
+    if (html.includes('</head>')) {
+      html = html.replace('</head>', enhancements + '</head>');
+    } else {
+      html = enhancements + html;
+    }
+    
+    return html;
+  }
+
+  createFallbackApp() {
+    const storyText = document.getElementById('storyInput').value;
+    const projectType = document.getElementById('projectType').value;
+    
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${projectType} Application</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; }
+            .sidebar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+            .sidebar .nav-link { color: rgba(255,255,255,0.8); border-radius: 8px; margin: 2px 0; }
+            .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2); color: white; }
+            .main-content { padding: 20px; }
+            .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 10px; }
+            .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 20px; }
+            .navbar-brand { font-weight: bold; }
+            .btn { border-radius: 6px; }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2 sidebar p-3">
+                    <h5 class="text-white mb-4"><i class="fas fa-rocket me-2"></i>App Demo</h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                        <a class="nav-link" href="#" onclick="showSection('data')"><i class="fas fa-database me-2"></i>Data</a>
+                        <a class="nav-link" href="#" onclick="showSection('reports')"><i class="fas fa-chart-bar me-2"></i>Reports</a>
+                        <a class="nav-link" href="#" onclick="showSection('settings')"><i class="fas fa-cog me-2"></i>Settings</a>
+                    </nav>
+                </div>
+                <div class="col-md-10 main-content">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 rounded shadow-sm">
+                        <div class="container-fluid">
+                            <span class="navbar-brand">${projectType} Application</span>
+                            <div class="navbar-nav ms-auto">
+                                <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+                                <a class="nav-link" href="#"><i class="fas fa-user"></i></a>
+                            </div>
+                        </div>
+                    </nav>
+                    
+                    <div id="dashboard" class="section">
+                        <h2 class="mb-4">Dashboard</h2>
+                        <div class="row mb-4">
+                            <div class="col-md-3"><div class="card stat-card"><h3>1,234</h3><p>Total Users</p></div></div>
+                            <div class="col-md-3"><div class="card stat-card"><h3>567</h3><p>Active Sessions</p></div></div>
+                            <div class="col-md-3"><div class="card stat-card"><h3>89%</h3><p>Success Rate</p></div></div>
+                            <div class="col-md-3"><div class="card stat-card"><h3>$12.5K</h3><p>Revenue</p></div></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card p-4">
+                                    <h5>Activity Overview</h5>
+                                    <div class="bg-light p-4 rounded text-center">
+                                        <i class="fas fa-chart-line fa-3x text-muted"></i>
+                                        <p class="mt-2 text-muted">Chart Placeholder</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card p-4">
+                                    <h5>Quick Actions</h5>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add New</button>
+                                        <button class="btn btn-outline-primary"><i class="fas fa-download me-2"></i>Export Data</button>
+                                        <button class="btn btn-outline-secondary"><i class="fas fa-cog me-2"></i>Settings</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="data" class="section" style="display:none;">
+                        <h2 class="mb-4">Data Management</h2>
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Data Records</h5>
+                                <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add Record</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                        <tr><th>ID</th><th>Name</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>001</td><td>Sample Record 1</td><td><span class="badge bg-success">Active</span></td><td>2024-01-15</td><td><button class="btn btn-sm btn-outline-primary">Edit</button></td></tr>
+                                        <tr><td>002</td><td>Sample Record 2</td><td><span class="badge bg-warning">Pending</span></td><td>2024-01-14</td><td><button class="btn btn-sm btn-outline-primary">Edit</button></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="reports" class="section" style="display:none;">
+                        <h2 class="mb-4">Reports & Analytics</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card p-4">
+                                    <h5>Performance Metrics</h5>
+                                    <div class="bg-light p-4 rounded text-center">
+                                        <i class="fas fa-chart-pie fa-3x text-muted"></i>
+                                        <p class="mt-2 text-muted">Pie Chart Placeholder</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card p-4">
+                                    <h5>Trends Analysis</h5>
+                                    <div class="bg-light p-4 rounded text-center">
+                                        <i class="fas fa-chart-bar fa-3x text-muted"></i>
+                                        <p class="mt-2 text-muted">Bar Chart Placeholder</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="settings" class="section" style="display:none;">
+                        <h2 class="mb-4">Settings</h2>
+                        <div class="card p-4">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Application Name</label>
+                                            <input type="text" class="form-control" value="${projectType} App">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Theme</label>
+                                            <select class="form-select">
+                                                <option>Default</option>
+                                                <option>Dark</option>
+                                                <option>Light</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Notifications</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" checked>
+                                                <label class="form-check-label">Email Notifications</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox">
+                                                <label class="form-check-label">SMS Notifications</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function showSection(sectionId) {
+                document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+                document.getElementById(sectionId).style.display = 'block';
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+        </script>
+    </body>
+    </html>
+    `;
+  }
+
+  regenerateApp() {
+    this.generateAppDemo();
+  }
+
+  exportAppCode(format) {
+    if (!this.generatedAppHtml) {
+      alert('Please generate the app first');
+      return;
+    }
+
+    if (format === 'html') {
+      this.downloadFile(this.generatedAppHtml, 'app-demo.html', 'text/html');
+    } else if (format === 'zip') {
+      this.createProjectZip();
+    }
+  }
+
+  async copyAppCode() {
+    if (!this.generatedAppHtml) {
+      alert('Please generate the app first');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(this.generatedAppHtml);
+      alert('✅ Code copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      this.showCodeModal();
+    }
+  }
+
+  downloadFile(content, filename, contentType) {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  createProjectZip() {
+    const projectFiles = this.generateProjectFiles();
+    
+    // Create a simple ZIP-like structure (for demo purposes)
+    let zipContent = 'Project Files:\n\n';
+    Object.entries(projectFiles).forEach(([filename, content]) => {
+      zipContent += `=== ${filename} ===\n${content}\n\n`;
+    });
+    
+    this.downloadFile(zipContent, 'app-project.txt', 'text/plain');
+    
+    // Show instructions for real ZIP creation
+    alert('📝 Project files downloaded as text.\n\nFor a real ZIP file, use tools like JSZip library or server-side processing.');
+  }
+
+  generateProjectFiles() {
+    const storyText = document.getElementById('storyInput').value;
+    const projectType = document.getElementById('projectType').value;
+    
+    return {
+      'index.html': this.generatedAppHtml,
+      'README.md': this.generateReadme(projectType, storyText),
+      'package.json': this.generatePackageJson(projectType),
+      'styles.css': this.generateExtraCSS(),
+      'script.js': this.generateExtraJS()
+    };
+  }
+
+  generateReadme(projectType, storyText) {
+    return `# ${projectType} Application
+
+## Description
+${storyText}
+
+## Generated by SprintCopilot
+This application was automatically generated based on user story analysis.
+
+## Tech Stack
+- HTML5
+- CSS3
+- Bootstrap 5
+- JavaScript
+- Font Awesome Icons
+
+## Getting Started
+1. Open index.html in a web browser
+2. Or serve with a local web server
+3. Customize the code as needed
+
+## Features
+- Responsive design
+- Modern UI components
+- Interactive navigation
+- Professional styling
+
+## Development
+This is a prototype/demo application. For production use:
+- Add proper backend integration
+- Implement real data handling
+- Add authentication and security
+- Optimize for performance
+- Add comprehensive testing
+`;
+  }
+
+  generatePackageJson(projectType) {
+    return `{
+  "name": "${projectType.toLowerCase().replace(/\s+/g, '-')}-app",
+  "version": "1.0.0",
+  "description": "Generated by SprintCopilot",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8080",
+    "dev": "live-server --port=8080"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "keywords": ["demo", "prototype", "sprintcopilot"],
+  "author": "SprintCopilot AI",
+  "license": "MIT"
+}`;
+  }
+
+  generateExtraCSS() {
+    return `/* Additional Custom Styles */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hover-lift {
+  transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .mobile-hidden { display: none !important; }
+  .mobile-full { width: 100% !important; }
+}`;
+  }
+
+  generateExtraJS() {
+    return `// Additional JavaScript functionality
+
+// Smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// Loading states
+function showLoading(element) {
+  element.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+  element.disabled = true;
+}
+
+function hideLoading(element, originalText) {
+  element.innerHTML = originalText;
+  element.disabled = false;
+}
+
+// Form validation
+function validateForm(formId) {
+  const form = document.getElementById(formId);
+  const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+  let isValid = true;
+  
+  inputs.forEach(input => {
+    if (!input.value.trim()) {
+      input.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      input.classList.remove('is-invalid');
+    }
+  });
+  
+  return isValid;
+}
+
+// Toast notifications
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = \`alert alert-\${type} position-fixed top-0 end-0 m-3\`;
+  toast.style.zIndex = '9999';
+  toast.innerHTML = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+console.log('SprintCopilot Demo App - Ready for development!');
+`;
+  }
+
+  showCodeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">📝 App Source Code</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" rows="20" readonly>${this.generatedAppHtml}</textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="this.closest('.modal-body').querySelector('textarea').select(); document.execCommand('copy'); alert('Copied!');">Select All</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    new bootstrap.Modal(modal).show();
+    modal.addEventListener('hidden.bs.modal', () => modal.remove());
+  }
+
+  escapeHtml(html) {
+    return html.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   exportToExcel() {
